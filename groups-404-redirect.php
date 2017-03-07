@@ -42,7 +42,7 @@ class Groups_404_Redirect {
 		// register_activation_hook(__FILE__, array( __CLASS__,'activate' ) );
 		register_deactivation_hook(__FILE__,  array( __CLASS__,'deactivate' ) );
 		add_action( 'wp', array( __CLASS__, 'wp' ) );
-		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ), 11 );
 		if ( is_admin() ) {
 			add_filter( 'plugin_action_links_'. plugin_basename( __FILE__ ), array( __CLASS__, 'admin_settings_link' ) );
 		}
@@ -68,10 +68,11 @@ class Groups_404_Redirect {
 	 * Add the Settings > Groups 404 section.
 	 */
 	public static function admin_menu() {
-		add_options_page(
-			'Groups 404 Redirect',
-			'Groups 404',
-			'manage_options',
+		add_submenu_page(
+			'groups-admin',
+			__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
+			__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
+			GROUPS_ADMINISTER_OPTIONS,
 			'groups-404-redirect',
 			array( __CLASS__, 'settings' )
 		);
@@ -84,7 +85,11 @@ class Groups_404_Redirect {
 	 * @param array $links with additional links
 	 */
 	public static function admin_settings_link( $links ) {
-		$links[] = '<a href="' . get_admin_url( null,'options-general.php?page=groups-404-redirect' ) . '">' . __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) . '</a>';
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( admin_url( 'admin.php?page=groups-404-redirect' ) ),
+			esc_html( __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) )
+		);
 		return $links;
 	}
 
@@ -93,7 +98,7 @@ class Groups_404_Redirect {
 	 */
 	public static function settings() {
 
-		if ( !current_user_can( 'manage_options' ) ) {
+		if ( !current_user_can( GROUPS_ADMINISTER_OPTIONS ) ) {
 			wp_die( __( 'Access denied.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		}
 
@@ -129,6 +134,13 @@ class Groups_404_Redirect {
 				Groups_Options::delete_option( 'groups-404-redirect-post-id' );
 			}
 
+			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( $_POST['post_param'] ) ) : null;
+			if ( !empty( $post_param ) ) {
+				Groups_Options::update_option( 'groups-404-redirect-post-param', $post_param );
+			} else {
+				Groups_Options::delete_option( 'groups-404-redirect-post-param' );
+			}
+
 			Groups_Options::update_option( 'groups-404-redirect-restricted-terms', !empty( $_POST['redirect_restricted_terms'] ) );
 
 			if ( key_exists( $_POST['status'], $http_status_codes ) ) {
@@ -143,6 +155,7 @@ class Groups_404_Redirect {
 
 		$redirect_to     = Groups_Options::get_option( 'groups-404-redirect-to', 'post' );
 		$post_id         = Groups_Options::get_option( 'groups-404-redirect-post-id', '' );
+		$post_param      = Groups_Options::get_option( 'groups-404-redirect-post-param', '' );
 		$redirect_status = Groups_Options::get_option( 'groups-404-redirect-status', '301' );
 		$redirect_restricted_terms = Groups_Options::get_option( 'groups-404-redirect-restricted-terms', false );
 
@@ -169,13 +182,13 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo __( 'Page or Post ID', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
-		echo sprintf( '<input type="text" name="post_id" value="%s" />', $post_id );
+		echo sprintf( '<input type="text" name="post_id" value="%s" />', esc_attr( $post_id ) );
 		echo '</label>';
 
 		if ( !empty( $post_id ) ) {
 			$post_title = get_the_title( $post_id );
 			echo '<p>';
-			echo sprintf( __( 'Title: <em>%s</em>', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ), $post_title );
+			echo sprintf( __( 'Title: <em>%s</em>', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ), esc_html( $post_title ) );
 			echo '</p>';
 		}
 
@@ -186,6 +199,18 @@ class Groups_404_Redirect {
 		echo '</p>';
 		echo '<p class="description">';
 		echo __( 'If the <strong>Redirect to the WordPress login</strong> option is chosen instead, visitors who are logged in but may not access a requested page, can be redirected to a specific page by setting the Page or Post ID here.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo '</p>';
+
+		echo '<label>';
+		echo __( 'Parameter name', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo ' ';
+		echo sprintf( '<input type="text" name="post_param" value="%s" />', esc_attr( $post_param ) );
+		echo '</label>';
+
+		echo '<p class="description">';
+		echo __( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo ' ';
+		echo __( 'This can be useful if you need the requested URL to be passed further on.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 
 		echo '</div>';
@@ -281,6 +306,7 @@ class Groups_404_Redirect {
 			if ( self::groups_is_active() ) {
 				$redirect_to     = Groups_Options::get_option( 'groups-404-redirect-to', 'post' );
 				$post_id         = Groups_Options::get_option( 'groups-404-redirect-post-id', '' );
+				$post_param      = Groups_Options::get_option( 'groups-404-redirect-post-param', '' );
 				$redirect_status = intval( Groups_Options::get_option( 'groups-404-redirect-status', '301' ) );
 
 				$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -337,15 +363,19 @@ class Groups_404_Redirect {
 
 							default: // 'post'
 								if ( empty( $post_id ) ) {
-									wp_redirect( get_home_url(), $redirect_status );
+									$redirect_url = get_home_url();
 								} else {
 									$post_id = apply_filters( 'groups_404_redirect_post_id', $post_id, $current_post_id, $current_url );
 									if ( $post_id != $current_post_id ) {
-										wp_redirect( get_permalink( $post_id ), $redirect_status );
+										$redirect_url = get_permalink( $post_id );
 									} else {
 										return;
 									}
 								}
+								if ( !empty( $post_param ) ) {
+									$redirect_url = add_query_arg( $post_param, urlencode( $current_url ), $redirect_url );
+								}
+								wp_redirect( $redirect_url, $redirect_status );
 								exit;
 
 						}
