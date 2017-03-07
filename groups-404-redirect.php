@@ -21,7 +21,7 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author: itthinx
  * Author URI: http://www.itthinx.com
  * Donate-Link: http://www.itthinx.com
@@ -301,7 +301,16 @@ class Groups_404_Redirect {
 						$is_restricted_by_term = !Groups_Restrict_Categories::user_can_read( $current_post_id );
 					}
 
-					if ( !Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) || $is_restricted_by_term || $is_restricted_term ) {
+					$user_can_read_post_legacy = true;
+					$legacy_enable = !defined( 'GROUPS_LEGACY_ENABLE' ) || Groups_Options::get_option( GROUPS_LEGACY_ENABLE, GROUPS_LEGACY_ENABLE_DEFAULT );
+					if ( $legacy_enable ) {
+						require_once GROUPS_LEGACY_LIB . '/access/class-groups-post-access-legacy.php';
+						if ( !Groups_Post_Access_Legacy::user_can_read_post( $current_post_id, get_current_user_id() ) ) {
+							$user_can_read_post_legacy = false;
+						}
+					}
+
+					if ( !$user_can_read_post_legacy || !Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) || $is_restricted_by_term || $is_restricted_term ) {
 
 						switch( $redirect_to ) {
 							case 'login' :
