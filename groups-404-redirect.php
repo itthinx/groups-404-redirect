@@ -42,7 +42,7 @@ class Groups_404_Redirect {
 		// register_activation_hook(__FILE__, array( __CLASS__,'activate' ) );
 		register_deactivation_hook(__FILE__,  array( __CLASS__,'deactivate' ) );
 		add_action( 'wp', array( __CLASS__, 'wp' ) );
-		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ),11 );
 		if ( is_admin() ) {
 			add_filter( 'plugin_action_links_'. plugin_basename( __FILE__ ), array( __CLASS__, 'admin_settings_link' ) );
 		}
@@ -68,10 +68,11 @@ class Groups_404_Redirect {
 	 * Add the Settings > Groups 404 section.
 	 */
 	public static function admin_menu() {
-		add_options_page(
-			'Groups 404 Redirect',
-			'Groups 404',
-			'manage_options',
+		add_submenu_page(
+			'groups-admin',
+			__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
+			__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
+			GROUPS_ACCESS_GROUPS,
 			'groups-404-redirect',
 			array( __CLASS__, 'settings' )
 		);
