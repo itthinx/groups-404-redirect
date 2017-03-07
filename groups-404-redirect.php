@@ -42,7 +42,7 @@ class Groups_404_Redirect {
 		// register_activation_hook(__FILE__, array( __CLASS__,'activate' ) );
 		register_deactivation_hook(__FILE__,  array( __CLASS__,'deactivate' ) );
 		add_action( 'wp', array( __CLASS__, 'wp' ) );
-		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ),11 );
+		add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ), 11 );
 		if ( is_admin() ) {
 			add_filter( 'plugin_action_links_'. plugin_basename( __FILE__ ), array( __CLASS__, 'admin_settings_link' ) );
 		}
@@ -72,7 +72,7 @@ class Groups_404_Redirect {
 			'groups-admin',
 			__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
 			__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
-			GROUPS_ACCESS_GROUPS,
+			GROUPS_ADMINISTER_OPTIONS,
 			'groups-404-redirect',
 			array( __CLASS__, 'settings' )
 		);
@@ -85,7 +85,11 @@ class Groups_404_Redirect {
 	 * @param array $links with additional links
 	 */
 	public static function admin_settings_link( $links ) {
-		$links[] = '<a href="' . get_admin_url( null,'options-general.php?page=groups-404-redirect' ) . '">' . __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) . '</a>';
+		$links[] = sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( admin_url( 'admin.php?page=groups-404-redirect' ) ),
+			esc_html( __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) )
+		);
 		return $links;
 	}
 
@@ -94,7 +98,7 @@ class Groups_404_Redirect {
 	 */
 	public static function settings() {
 
-		if ( !current_user_can( 'manage_options' ) ) {
+		if ( !current_user_can( GROUPS_ADMINISTER_OPTIONS ) ) {
 			wp_die( __( 'Access denied.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		}
 
