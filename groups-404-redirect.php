@@ -134,8 +134,9 @@ class Groups_404_Redirect {
 				Groups_Options::delete_option( 'groups-404-redirect-post-id' );
 			}
 
-			if ( !empty( $_POST['post_param'] ) ) {
-				Groups_Options::update_option( 'groups-404-redirect-post-param', $_POST['post_param'] );
+			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( $_POST['post_param'] ) ) : null;
+			if ( !empty( $post_param ) ) {
+				Groups_Options::update_option( 'groups-404-redirect-post-param', $post_param );
 			} else {
 				Groups_Options::delete_option( 'groups-404-redirect-post-param' );
 			}
@@ -181,13 +182,13 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo __( 'Page or Post ID', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
-		echo sprintf( '<input type="text" name="post_id" value="%s" />', $post_id );
+		echo sprintf( '<input type="text" name="post_id" value="%s" />', esc_attr( $post_id ) );
 		echo '</label>';
 
 		if ( !empty( $post_id ) ) {
 			$post_title = get_the_title( $post_id );
 			echo '<p>';
-			echo sprintf( __( 'Title: <em>%s</em>', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ), $post_title );
+			echo sprintf( __( 'Title: <em>%s</em>', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ), esc_html( $post_title ) );
 			echo '</p>';
 		}
 
@@ -203,11 +204,13 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo __( 'Parameter name', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
-		echo sprintf( '<input type="text" name="post_param" value="%s" />', $post_param );
+		echo sprintf( '<input type="text" name="post_param" value="%s" />', esc_attr( $post_param ) );
 		echo '</label>';
 
 		echo '<p class="description">';
-		echo __( 'Indicate the parameter name which gets the original url requested when redirecting to given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo __( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo ' ';
+		echo __( 'This can be useful if you need the requested URL to be passed further on.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 
 		echo '</div>';
@@ -370,7 +373,7 @@ class Groups_404_Redirect {
 									}
 								}
 								if ( !empty( $post_param ) ) {
-									$redirect_url = add_query_arg($post_param, urlencode($current_url), $redirect_url);
+									$redirect_url = add_query_arg( $post_param, urlencode( $current_url ), $redirect_url );
 								}
 								wp_redirect( $redirect_url, $redirect_status );
 								exit;

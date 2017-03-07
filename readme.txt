@@ -54,6 +54,7 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 = 1.3.0 =
 * Moved the settings to the Groups menu.
 * Tested with WordPress 4.7.3.
+* Added the option to indicate the requested URL in a custom URL parameter when redirecting.
 
 = 1.2.5 =
 * Groups 2.x legacy mode compatible.
@@ -100,4 +101,4 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 == Upgrade Notice ==
 
 = 1.3.0 =
-This release contains improvements for Groups 2.x legacy compatibility, moves the settings to the Groups menu and has been tested with the latest WordPress release.
+This release contains improvements for Groups 2.x legacy compatibility, moves the settings to the Groups menu, adds an optional URL parameter to pass the requested URL before redirecting and has been tested with the latest WordPress release.
