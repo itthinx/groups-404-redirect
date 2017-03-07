@@ -2,9 +2,9 @@
 Contributors: itthinx
 Donate link: http://www.itthinx.com/plugins/groups-404-redirect
 Tags: 301, 302, 303, 307, 404, access, access control, capability, capabilities, content, download, downloads, file, file access, files, group, groups, member, members, membership, memberships, permission, permissions, redirect, redirection, subscription, subscriptions
-Requires at least: 3.3
-Tested up to: 3.9.2
-Stable tag: 1.2.3
+Requires at least: 4.0
+Tested up to: 4.4
+Stable tag: 1.2.4
 License: GPLv3
 
 Redirect 404's when a visitor tries to access a page protected by Groups.
@@ -51,6 +51,10 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 
 == Changelog ==
 
+= 1.2.4 =
+* Tested with WordPress 4.4.
+* Updated link to Groups Restrict Categories.
+
 = 1.2.3 =
 * Added a fix to circumvent a bug in some PHP versions related to the usage of method_exists() with an inexistent class.
 
@@ -87,29 +91,5 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 
 == Upgrade Notice ==
 
-= 1.2.3 =
-* Added a fix to circumvent a bug in some PHP versions.
-
-= 1.2.2 =
-* Added support for redirection on posts restricted by terms.
-
-= 1.2.1 =
-* WordPress 3.9.1 compatibility checked.
-
-= 1.2.0 =
-* This version supports redirection for restricted categories, tags and taxonomy terms when [Groups Restrict Categories](http://www.itthinx.com/plugins/groups-restrict-categories/) is used.
-
-= 1.1.3 =
-* Fixed a redirect loop when redirecting visitors to the WordPress login. WordPress 3.8 compatibility checked.
-
-= 1.1.1 =
-* WordPress 3.6 compatibility checked and better info on the settings page.
-
-= 1.1.0 =
-* Now supports redirection for Custom Post Types.
-
-= 1.0.1 =
-* Added Settings link.
-
-= 1.0.0 =
-* Initial release.
+= 1.2.4 =
+This version has been tested with WordPress 4.4.

@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2015 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
@@ -21,7 +21,7 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
- * Version: 1.2.3
+ * Version: 1.2.4
  * Author: itthinx
  * Author URI: http://www.itthinx.com
  * Donate-Link: http://www.itthinx.com
@@ -217,7 +217,7 @@ class Groups_404_Redirect {
 		echo __( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '<p class="description">';
-		echo __( 'This option will only take effect if <a href="http://www.itthinx.com/plugins/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo __( 'This option will only take effect if <a href="http://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '</div>';
 
