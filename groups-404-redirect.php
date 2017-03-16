@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013-2015 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2017 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
@@ -21,7 +21,7 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: itthinx
  * Author URI: http://www.itthinx.com
  * Donate-Link: http://www.itthinx.com
@@ -330,9 +330,11 @@ class Groups_404_Redirect {
 					$user_can_read_post_legacy = true;
 					$legacy_enable = !defined( 'GROUPS_LEGACY_ENABLE' ) || Groups_Options::get_option( GROUPS_LEGACY_ENABLE, GROUPS_LEGACY_ENABLE_DEFAULT );
 					if ( $legacy_enable ) {
-						require_once GROUPS_LEGACY_LIB . '/access/class-groups-post-access-legacy.php';
-						if ( !Groups_Post_Access_Legacy::user_can_read_post( $current_post_id, get_current_user_id() ) ) {
-							$user_can_read_post_legacy = false;
+						if ( defined( 'GROUPS_LEGACY_LIB' ) ) {
+							require_once GROUPS_LEGACY_LIB . '/access/class-groups-post-access-legacy.php';
+							if ( !Groups_Post_Access_Legacy::user_can_read_post( $current_post_id, get_current_user_id() ) ) {
+								$user_can_read_post_legacy = false;
+							}
 						}
 					}
 

@@ -4,7 +4,7 @@ Donate link: http://www.itthinx.com/plugins/groups-404-redirect
 Tags: 301, 302, 303, 307, 404, access, access control, capability, capabilities, content, download, downloads, file, file access, files, group, groups, member, members, membership, memberships, permission, permissions, redirect, redirection, subscription, subscriptions
 Requires at least: 4.0
 Tested up to: 4.7.3
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv3
 
 Redirect 404's when a visitor tries to access a page protected by Groups.
@@ -50,6 +50,9 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 1. Groups 404 Redirect settings.
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed a warning for setups using Groups < 2.x.
 
 = 1.3.0 =
 * Moved the settings to the Groups menu.
@@ -100,5 +103,5 @@ You can leave a comment at the [Groups 404 Redirect](http://www.itthinx.com/plug
 
 == Upgrade Notice ==
 
-= 1.3.0 =
-This release contains improvements for Groups 2.x legacy compatibility, moves the settings to the Groups menu, adds an optional URL parameter to pass the requested URL before redirecting and has been tested with the latest WordPress release.
+= 1.3.1 =
+This release fixes an issue with installations using Groups < 2.x.
