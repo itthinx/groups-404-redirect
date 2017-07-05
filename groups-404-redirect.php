@@ -21,7 +21,7 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
- * Version: 1.3.1
+ * Version: 1.4.0
  * Author: itthinx
  * Author URI: http://www.itthinx.com
  * Donate-Link: http://www.itthinx.com
@@ -319,6 +319,10 @@ class Groups_404_Redirect {
 					require_once 'groups-404-url-to-postid.php';
 					$current_post_id = groups_404_url_to_postid( $current_url );
 				}
+
+				$redirect_to = apply_filters( 'groups_404_redirect_redirect_to', $redirect_to, $current_post_id, $current_url );
+				$post_param  = apply_filters( 'groups_404_redirect_post_param', $post_param, $current_post_id, $current_url );
+				$redirect_status = apply_filters( 'groups_404_redirect_redirect_status', $redirect_status, $current_post_id, $current_url );
 
 				if ( $current_post_id ) {
 
