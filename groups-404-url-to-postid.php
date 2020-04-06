@@ -15,21 +15,24 @@
  * @author WordPress
  * @author betterwp.net
  * @author itthinx
- * 
+ *
  * @package groups-404-redirect
  * @since groups-404-redirect 1.1.0
  */
 
 /**
  * Find the post ID also for custom post types and bypassing filters.
- * 
+ *
  * Sources used:
  * - url_to_postid() in rewrite.php
  * - http://betterwp.net/wordpress-tips/url_to_postid-for-custom-post-types/
- * 
+ *
  * Modifications made so that Groups doesn't filter out the post we're looking for.
- * 
+ *
  * @param string $url
+ *
+ * @return int
+ *
  * @link http://betterwp.net/wordpress-tips/url_to_postid-for-custom-post-types/
  * @see url_to_postid()
  */
