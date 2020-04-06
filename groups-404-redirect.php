@@ -271,7 +271,7 @@ class Groups_404_Redirect {
 		echo '<br/>';
 
 		echo '<div class="buttons">';
-		echo sprintf( '<input class="create button" type="submit" name="submit" value="%s" />', __( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', __( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '<input type="hidden" name="action" value="save" />';
 		echo '</div>';
 
