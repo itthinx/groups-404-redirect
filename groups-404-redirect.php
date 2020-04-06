@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013-2017 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2020 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
@@ -21,7 +21,7 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
- * Version: 1.5.0
+ * Version: 1.6.0
  * Author: itthinx
  * Author URI: http://www.itthinx.com
  * Donate-Link: http://www.itthinx.com
@@ -271,7 +271,7 @@ class Groups_404_Redirect {
 		echo '<br/>';
 
 		echo '<div class="buttons">';
-		echo sprintf( '<input class="create button" type="submit" name="submit" value="%s" />', __( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', __( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '<input type="hidden" name="action" value="save" />';
 		echo '</div>';
 
@@ -393,6 +393,7 @@ class Groups_404_Redirect {
 
 	/**
 	 * Returns true if the Groups plugin is active.
+	 *
 	 * @return boolean true if Groups is active
 	 */
 	private static function groups_is_active() {
