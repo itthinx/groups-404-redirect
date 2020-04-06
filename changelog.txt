@@ -5,6 +5,7 @@
 * Code documentation corrections.
 * Updated plugin tags and other info.
 * Updated save button class on settings.
+* Updated outdated links.
 
 = 1.5.0 =
 * WordPress 5.2 compatible.

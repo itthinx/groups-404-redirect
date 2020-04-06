@@ -11,7 +11,7 @@ Redirect 404's when a visitor tries to access a page protected by Groups.
 
 == Description ==
 
-This plugin redirects 404's caused by hits on pages that are protected by [Groups](http://wordpress.org/plugins/groups/).
+This plugin redirects 404's caused by hits on pages that are protected by [Groups](https://wordpress.org/plugins/groups/).
 
 The redirection settings can be adjusted in Settings > Groups 404 :
 

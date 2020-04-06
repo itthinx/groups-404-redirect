@@ -20,11 +20,11 @@
  *
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
- * Description: Redirect 404's when a visitor tries to access a page protected by <a href="http://wordpress.org/extend/plugins/groups/">Groups</a>.
+ * Description: Redirect 404's when a visitor tries to access a page protected by <a href="https://wordpress.org/plugins/groups/">Groups</a>.
  * Version: 1.6.0
  * Author: itthinx
- * Author URI: http://www.itthinx.com
- * Donate-Link: http://www.itthinx.com
+ * Author URI: https://www.itthinx.com
+ * Donate-Link: https://www.itthinx.com
  * License: GPLv3
  */
 
@@ -104,7 +104,7 @@ class Groups_404_Redirect {
 
 		if ( !self::groups_is_active() ) {
 			echo '<p>';
-			echo __( 'Please install and activate <a href="http://wordpress.org/extend/plugins/groups/">Groups</a> to use this plugin.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo __( 'Please install and activate <a href="https://wordpress.org/plugins/groups/">Groups</a> to use this plugin.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 			echo '</p>';
 			return;
 		}
@@ -242,7 +242,7 @@ class Groups_404_Redirect {
 		echo __( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '<p class="description">';
-		echo __( 'This option will only take effect if <a href="http://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo __( 'This option will only take effect if <a href="https://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '</div>';
 
