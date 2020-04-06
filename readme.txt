@@ -20,7 +20,7 @@ Visits to protected pages can be redirected to:
 - a specific post, or
 - the WordPress login
 
-The redirection can also be applied for restricted categories, tags and other taxonomy terms if [Groups Restrict Categories](http://www.itthinx.com/plugins/groups-restrict-categories/) is used.
+The redirection can also be applied for restricted categories, tags and other taxonomy terms if [Groups Restrict Categories](https://www.itthinx.com/shop/groups-restrict-categories/) is used.
 
 The redirect status code can be selected among:
 
