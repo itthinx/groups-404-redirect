@@ -3,8 +3,8 @@ Contributors: itthinx
 Donate link: http://www.itthinx.com/plugins/groups-404-redirect
 Tags: 301, 302, 303, 307, 404, access, access control, capability, capabilities, content, download, downloads, file, file access, files, group, groups, member, members, membership, memberships, permission, permissions, redirect, redirection, subscription, subscriptions
 Requires at least: 4.0
-Tested up to: 5.2
-Stable tag: 1.5.0
+Tested up to: 5.4
+Stable tag: 1.6.0
 License: GPLv3
 
 Redirect 404's when a visitor tries to access a page protected by Groups.
