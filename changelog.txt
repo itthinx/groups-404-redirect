@@ -1,5 +1,8 @@
 == Groups 404 Redirect by itthinx - changelog.txt ==
 
+= 1.7.0 =
+* WordPress 5.7 compatible.
+
 = 1.6.0 =
 * WordPress 5.4 compatible.
 * Code documentation corrections.
