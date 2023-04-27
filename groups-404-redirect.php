@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013-2020 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2023 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
@@ -104,7 +104,7 @@ class Groups_404_Redirect {
 
 		if ( !self::groups_is_active() ) {
 			echo '<p>';
-			echo __( 'Please install and activate <a href="https://wordpress.org/plugins/groups/">Groups</a> to use this plugin.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo wp_kses_post( __( 'Please install and activate <a href="https://wordpress.org/plugins/groups/">Groups</a> to use this plugin.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 			echo '</p>';
 			return;
 		}
@@ -147,10 +147,11 @@ class Groups_404_Redirect {
 				Groups_Options::update_option( 'groups-404-redirect-status', $_POST['status'] );
 			}
 
-			echo
-			'<p class="info">' .
-			__( 'The settings have been saved.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) .
-			'</p>';
+			echo '<div class="updated">';
+			echo '<p>';
+			echo esc_html__( 'The settings have been saved.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo '</p>';
+			echo '</div>';
 		}
 
 		$redirect_to     = Groups_Options::get_option( 'groups-404-redirect-to', 'post' );
@@ -160,27 +161,27 @@ class Groups_404_Redirect {
 		$redirect_restricted_terms = Groups_Options::get_option( 'groups-404-redirect-restricted-terms', false );
 
 		echo '<h1>';
-		echo __( 'Groups 404 Redirect', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Groups 404 Redirect', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</h1>';
 
 		echo '<p>';
-		echo __( 'Redirect settings when a visitor tries to access a page protected by Groups.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect settings when a visitor tries to access a page protected by Groups.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 
-		echo '<div class="settings">';
+		echo '<div class="settings" style="padding-right: 1em;">';
 		echo '<form name="settings" method="post" action="">';
 		echo '<div>';
 
 		echo '<label>';
 		echo sprintf( '<input type="radio" name="redirect_to" value="post" %s />', $redirect_to == 'post' ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo __( 'Redirect to a page or post', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect to a page or post', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 
 		echo '<label>';
-		echo __( 'Page or Post ID', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Page or Post ID', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
 		echo sprintf( '<input type="text" name="post_id" value="%s" />', esc_attr( $post_id ) );
 		echo '</label>';
@@ -188,29 +189,33 @@ class Groups_404_Redirect {
 		if ( !empty( $post_id ) ) {
 			$post_title = get_the_title( $post_id );
 			echo '<p>';
-			echo sprintf( __( 'Title: <em>%s</em>', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ), esc_html( $post_title ) );
+			echo esc_html__( 'Title:', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo ' ';
+			echo '<strong>';
+			echo esc_html( $post_title );
+			echo '</strong>';
 			echo '</p>';
 		}
 
 		echo '<p class="description">';
-		echo __( 'Indicate the ID of a page or a post to redirect to, leave it empty to redirect to the home page.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Indicate the ID of a page or a post to redirect to, leave it empty to redirect to the home page.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '<br/>';
-		echo __( 'The title of the page will be shown if a valid ID has been given.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'The title of the page will be shown if a valid ID has been given.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '<p class="description">';
-		echo __( 'If the <strong>Redirect to the WordPress login</strong> option is chosen instead, visitors who are logged in but may not access a requested page, can be redirected to a specific page by setting the Page or Post ID here.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo wp_kses_post( __( 'If the <strong>Redirect to the WordPress login</strong> option is chosen instead, visitors who are logged in but may not access a requested page, can be redirected to a specific page by setting the Page or Post ID here.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '</p>';
 
 		echo '<label>';
-		echo __( 'Parameter name', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Parameter name', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
 		echo sprintf( '<input type="text" name="post_param" value="%s" />', esc_attr( $post_param ) );
 		echo '</label>';
 
 		echo '<p class="description">';
-		echo __( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo ' ';
-		echo __( 'This can be useful if you need the requested URL to be passed further on.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'This can be useful if you need the requested URL to be passed further on.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 
 		echo '</div>';
@@ -220,12 +225,12 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo sprintf( '<input type="radio" name="redirect_to" value="login" %s />', $redirect_to == 'login' ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo __( 'Redirect to the WordPress login', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect to the WordPress login', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 		echo '<p class="description">';
-		echo __( 'If the visitor is logged in but is not allowed to access the requested page, the visitor will be taken to the home page, or, if a Page or Post ID is set, to the page indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'If the visitor is logged in but is not allowed to access the requested page, the visitor will be taken to the home page, or, if a Page or Post ID is set, to the page indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '</div>';
 
@@ -234,36 +239,34 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo sprintf( '<input type="checkbox" name="redirect_restricted_terms" %s />', $redirect_restricted_terms ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo __( 'Redirect restricted categories, tags and taxonomy terms &hellip;', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect restricted categories, tags and taxonomy terms &hellip;', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 		echo '<p class="description">';
-		echo __( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
 		echo '</p>';
 		echo '<p class="description">';
-		echo __( 'This option will only take effect if <a href="https://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo wp_kses_post( __( 'This option will only take effect if <a href="https://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '</p>';
 		echo '</div>';
 
 		echo '<br/>';
 
-		echo
-			'<p style="border-top:1px solid #eee; margin-top:1em; padding-top: 1em;">' .
-			'<label>' .
-			__( 'Redirect Status Code', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) .
-			' ' .
-			'<select name="status">';
+		echo '<p>';
+		echo '<label>';
+		echo esc_html__( 'Redirect Status Code', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo ' ';
+		echo '<select name="status">';
 		foreach ( $http_status_codes as $code => $name ) {
-			echo '<option value="' . esc_attr( $code ) . '" ' . ( $redirect_status == $code ? ' selected="selected" ' : '' ) . '>' . $name . ' (' . $code . ')' . '</option>';
+			echo '<option value="' . esc_attr( $code ) . '" ' . ( $redirect_status == $code ? ' selected="selected" ' : '' ) . '>' . esc_html( $name ) . ' (' . esc_html( $code ) . ')' . '</option>';
 		}
-		echo
-			'</select>' .
-			'</label>' .
-			'</p>';
+		echo '</select>';
+		echo '</label>';
+		echo '</p>';
 
 		echo '<p class="description">';
-		echo __( '<a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">RFC 2616</a> provides details on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo wp_kses_post( __( '<a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">RFC 2616</a> provides details on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '</p>';
 
 		wp_nonce_field( 'admin', 'groups-404-redirect', true, true );
@@ -271,7 +274,7 @@ class Groups_404_Redirect {
 		echo '<br/>';
 
 		echo '<div class="buttons">';
-		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', __( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', esc_attr__( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
 		echo '<input type="hidden" name="action" value="save" />';
 		echo '</div>';
 
@@ -403,7 +406,7 @@ class Groups_404_Redirect {
 			$active_sitewide_plugins = array_keys( $active_sitewide_plugins );
 			$active_plugins = array_merge( $active_plugins, $active_sitewide_plugins );
 		}
-		return in_array( 'groups/groups.php', $active_plugins ); 
+		return in_array( 'groups/groups.php', $active_plugins );
 	}
 }
 Groups_404_Redirect::init();

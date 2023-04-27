@@ -2,7 +2,7 @@
 Contributors: itthinx
 Donate link: http://www.itthinx.com/plugins/groups-404-redirect
 Tags: groups, access, access control, memberships, members
-Requires at least: 4.0
+Requires at least: 6.0
 Tested up to: 6.2
 Stable tag: 1.8.0
 License: GPLv3
@@ -31,7 +31,7 @@ The redirect status code can be selected among:
 
 == Installation ==
 
-1. Upload or extract the `groups-404-redirect` folder to your site's `/wp-content/plugins/` directory. You can also use the *Add new* option found in the *Plugins* menu in WordPress.  
+1. Upload or extract the `groups-404-redirect` folder to your site's `/wp-content/plugins/` directory. You can also use the *Add new* option found in the *Plugins* menu in WordPress.
 2. Enable the plugin from the *Plugins* menu in WordPress.
 3. Go to Settings > Groups 404 and adjust the redirection settings as desired.
 
