@@ -3,8 +3,8 @@ Contributors: itthinx
 Donate link: http://www.itthinx.com/plugins/groups-404-redirect
 Tags: groups, access, access control, memberships, members
 Requires at least: 4.0
-Tested up to: 5.7
-Stable tag: 1.7.0
+Tested up to: 6.2
+Stable tag: 1.8.0
 License: GPLv3
 
 Redirect 404's when a visitor tries to access a page protected by Groups.
