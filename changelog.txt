@@ -1,5 +1,14 @@
 == Groups 404 Redirect by itthinx - changelog.txt ==
 
+= 1.8.0 =
+* WordPress 6.2 compatible.
+* Requires at least WordPress 6.0.
+* Revised settings saved confirmation notice to conform to standard notices.
+* Added missing output escaping in admin section.
+* Revised title display in admin section for chosen post.
+* Revised field formatting in admin section.
+* Fixed superfluous trailing whitespace.
+
 = 1.7.0 =
 * WordPress 5.7 compatible.
 
