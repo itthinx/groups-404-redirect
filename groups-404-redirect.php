@@ -315,53 +315,21 @@ class Groups_404_Redirect {
 
 		global $wp_query, $groups_404_redirect;
 
-		$is_category = false;
-		$is_tag = false;
-		$is_tax = false;
+		$is_category = $groups_404_redirect['is_category'] ?? false;
+		$is_tag = $groups_404_redirect['is_tag'] ?? false;
+		$is_tax = $groups_404_redirect['is_tax'] ?? false;
 
 		$term_ids = array();
 
-		// @since 1.9.0
-		// Check if this is for a term which is not accessible and for which $wp_query->is_category || $wp_query->is_tag || $wp_query->is_tax would yield false
-		// and for which $term_id = $wp_query->get_queried_object_id() would yield 0.
-		if ( $wp_query->is_main_query() ) {
-			$is_category = $groups_404_redirect['is_category'] ?? $is_category;
-			$is_tag = $groups_404_redirect['is_tag'] ?? $is_tag;
-			$is_tax = $groups_404_redirect['is_tax'] ?? $is_tax;
-			if ( $is_category || $is_tag || $is_tax ) {
-				$term_id = $wp_query->get_queried_object_id();
-				if ( !$term_id ) {
-					/**
-					 * @var WP_Tax_Query $tax_query
-					 */
-					$tax_query = $groups_404_redirect['tax_query'];
-					if ( $tax_query instanceof WP_Tax_Query ) {
-						$priority = has_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ) );
-						if ( is_numeric( $priority ) ) {
-							remove_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ), $priority );
-						}
-						foreach ( $tax_query->queried_terms as $taxonomy => $items ) {
-							if ( !empty( $items['terms'] ) ) {
-								foreach ( $items['terms'] as $item_term ) {
-									$term = get_term_by( $items['field'], $item_term, $taxonomy );
-									if ( $term instanceof WP_Term ) {
-										$term_ids[] = $term->term_id;
-									}
-								}
-							}
-						}
-						if ( is_numeric( $priority ) ) {
-							add_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ), $priority, 3 );
-						}
-					}
-				}
-			}
+		if ( !class_exists( 'Groups_Options' ) ) {
+			return;
 		}
 
+		$redirect_restricted_terms = Groups_Options::get_option( 'groups-404-redirect-restricted-terms', false );
+
 		$is_restricted_term = false;
-		if ( class_exists( 'Groups_Options' ) && class_exists( 'Groups_Restrict_Categories' ) ) {
-			$redirect_restricted_terms = Groups_Options::get_option( 'groups-404-redirect-restricted-terms', false );
-			if ( $redirect_restricted_terms ) {
+		if ( $redirect_restricted_terms ) {
+			if ( class_exists( 'Groups_Restrict_Categories' ) ) {
 				$is_term = $wp_query->is_category || $wp_query->is_tag || $wp_query->is_tax || $is_category || $is_tag || $is_tax;
 				if ( $is_term ) {
 					$restricted_term_ids = Groups_Restrict_Categories::get_user_restricted_term_ids( get_current_user_id() );
@@ -370,11 +338,46 @@ class Groups_404_Redirect {
 						if ( in_array( $term_id, $restricted_term_ids ) ) {
 							$is_restricted_term = true;
 						}
-					} else if ( count( $term_ids ) > 0 ) {
-						foreach ( $term_ids as $term_id ) {
-							if ( in_array( $term_id, $restricted_term_ids ) ) {
-								$is_restricted_term = true;
-								break;
+					} else {
+						// @since 1.9.0
+						// Check if this is for a term which is not accessible and for which $wp_query->is_category || $wp_query->is_tag || $wp_query->is_tax would yield false
+						// and for which $term_id = $wp_query->get_queried_object_id() would yield 0.
+						if ( $wp_query->is_main_query() ) {
+							if ( $is_category || $is_tag || $is_tax ) {
+								$term_id = $wp_query->get_queried_object_id();
+								if ( !$term_id ) {
+									/**
+									 * @var WP_Tax_Query $tax_query
+									 */
+									$tax_query = $groups_404_redirect['tax_query'];
+									if ( $tax_query instanceof WP_Tax_Query ) {
+										$priority = has_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ) );
+										if ( is_numeric( $priority ) ) {
+											remove_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ), $priority );
+										}
+										foreach ( $tax_query->queried_terms as $taxonomy => $items ) {
+											if ( !empty( $items['terms'] ) ) {
+												foreach ( $items['terms'] as $item_term ) {
+													$term = get_term_by( $items['field'], $item_term, $taxonomy );
+													if ( $term instanceof WP_Term ) {
+														$term_ids[] = $term->term_id;
+													}
+												}
+											}
+										}
+										if ( is_numeric( $priority ) ) {
+											add_filter( 'list_terms_exclusions', array( 'Groups_Restrict_Categories', 'list_terms_exclusions' ), $priority, 3 );
+										}
+									}
+								}
+							}
+						}
+						if ( count( $term_ids ) > 0 ) {
+							foreach ( $term_ids as $term_id ) {
+								if ( in_array( $term_id, $restricted_term_ids ) ) {
+									$is_restricted_term = true;
+									break;
+								}
 							}
 						}
 					}
