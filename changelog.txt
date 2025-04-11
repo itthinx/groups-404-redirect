@@ -5,6 +5,7 @@
 * Requires at least WordPress 6.5.
 * Fixed redirect on visiting protected term.
 * Fixed error due to undefined constant when Groups is not active.
+* Fixed settings link not available when Groups is not active.
 
 = 1.8.0 =
 * WordPress 6.2 compatible.

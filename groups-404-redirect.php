@@ -112,11 +112,13 @@ class Groups_404_Redirect {
 	 * @param array $links with additional links
 	 */
 	public static function admin_settings_link( $links ) {
-		$links[] = sprintf(
-			'<a href="%s">%s</a>',
-			esc_url( admin_url( 'admin.php?page=groups-404-redirect' ) ),
-			esc_html( __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) )
-		);
+		if ( defined( 'GROUPS_PLUGIN_DOMAIN' ) ) {
+			$links[] = sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( admin_url( 'admin.php?page=groups-404-redirect' ) ),
+				esc_html( __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) )
+			);
+		}
 		return $links;
 	}
 
