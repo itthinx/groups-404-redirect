@@ -93,14 +93,16 @@ class Groups_404_Redirect {
 	 * Add the Settings > Groups 404 section.
 	 */
 	public static function admin_menu() {
-		add_submenu_page(
-			'groups-admin',
-			__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
-			__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
-			GROUPS_ADMINISTER_OPTIONS,
-			'groups-404-redirect',
-			array( __CLASS__, 'settings' )
-		);
+		if ( defined( 'GROUPS_PLUGIN_DOMAIN' ) ) {
+			add_submenu_page(
+				'groups-admin',
+				__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
+				__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
+				GROUPS_ADMINISTER_OPTIONS,
+				'groups-404-redirect',
+				array( __CLASS__, 'settings' )
+			);
+		}
 	}
 
 	/**
