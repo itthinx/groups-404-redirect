@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013-2025 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2026 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
