@@ -27,21 +27,19 @@ if ( !defined( 'ABSPATH' ) ) {
 /**
  * Find the post ID also for custom post types and bypassing filters.
  *
- * Sources used:
- * - url_to_postid() in rewrite.php
- *
  * Modifications made so that Groups doesn't filter out the post we're looking for.
+ * See url_to_postid() in rewrite.php
+ *
+ * @see url_to_postid()
  *
  * @param string $url
  *
  * @return int
- *
- * @see url_to_postid()
  */
 function groups_404_url_to_postid( $url ) {
 	global $wp_rewrite;
 
-	$url = apply_filters( 'url_to_postid', $url );
+	$url = apply_filters( 'url_to_postid', $url ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 	// First, check to see if there is a 'p=N' or 'page_id=N' to match against
 	if ( preg_match( '#[?&](p|page_id|attachment_id)=(\d+)#', $url, $values ) )   {

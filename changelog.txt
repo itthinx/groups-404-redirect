@@ -2,12 +2,15 @@
 
 = 2.0.0 =
 * Update - WordPress 7.1 compatible.
-* Fix - Replaced uses of language domain constants with string literals.
+* Update - Code validation, input and output sanitation and security improvements.
+* Update - Using Groups API functions.
 * Update - Using WP API for safer redirects.
+* Fix - Replaced uses of language domain constants with string literals.
 * Fix - Resolved instances of redirects without exits.
 * Dev - Revised instances of missing output escaping.
 * Dev - Added ABSPATH checks
 * Dev - Validation WordPress.DB.SlowDBQuery.slow_db_query_tax_query
+* Dev - Validation WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 * Dev - Validation WordPress.Security.NonceVerification.Missing
 * Dev - Validation WordPress.Security.NonceVerification.Recommended
 * Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url

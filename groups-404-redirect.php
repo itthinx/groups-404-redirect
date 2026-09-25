@@ -154,35 +154,37 @@ class Groups_404_Redirect {
 			'307' => __( 'Temporary Redirect', 'groups-404-redirect')
 		);
 
-		if ( isset( $_POST['action'] ) && ( $_POST['action'] == 'save' ) && wp_verify_nonce( $_POST['groups-404-redirect'], 'admin' ) ) {
+		$action = sanitize_text_field( wp_unslash( $_POST['action'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( $action === 'save' && self::verify_post_nonce( 'groups-404-redirect', 'admin' ) ) {
 
 			$redirect_to = 'post';
-			if ( !empty( $_POST['redirect_to'] ) ) {
-				switch( $_POST['redirect_to'] ) {
+			if ( !empty( $_POST['redirect_to'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				switch( $_POST['redirect_to'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 					case 'post' :
 					case 'login' :
-						Groups_Options::update_option( 'groups-404-redirect-to', $_POST['redirect_to'] );
+						Groups_Options::update_option( 'groups-404-redirect-to', sanitize_text_field( wp_unslash( $_POST['redirect_to'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 						break;
 				}
 			}
 
-			if ( !empty( $_POST['post_id'] ) ) {
-				Groups_Options::update_option( 'groups-404-redirect-post-id', intval( $_POST['post_id'] ) );
+			if ( !empty( $_POST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				Groups_Options::update_option( 'groups-404-redirect-post-id', intval( $_POST['post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			} else {
 				Groups_Options::delete_option( 'groups-404-redirect-post-id' );
 			}
 
-			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( $_POST['post_param'] ) ) : null;
+			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( sanitize_text_field( wp_unslash( $_POST['post_param'] ) ) ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( !empty( $post_param ) ) {
 				Groups_Options::update_option( 'groups-404-redirect-post-param', $post_param );
 			} else {
 				Groups_Options::delete_option( 'groups-404-redirect-post-param' );
 			}
 
-			Groups_Options::update_option( 'groups-404-redirect-restricted-terms', !empty( $_POST['redirect_restricted_terms'] ) );
+			Groups_Options::update_option( 'groups-404-redirect-restricted-terms', !empty( $_POST['redirect_restricted_terms'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-			if ( key_exists( $_POST['status'], $http_status_codes ) ) {
-				Groups_Options::update_option( 'groups-404-redirect-status', $_POST['status'] );
+			$status = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( key_exists( $status, $http_status_codes ) ) {
+				Groups_Options::update_option( 'groups-404-redirect-status', $status );
 			}
 
 			echo '<div class="updated">';
@@ -405,7 +407,13 @@ class Groups_404_Redirect {
 				$post_param      = Groups_Options::get_option( 'groups-404-redirect-post-param', '' );
 				$redirect_status = intval( Groups_Options::get_option( 'groups-404-redirect-status', '301' ) );
 
-				$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				if ( function_exists( 'groups_get_current_url' ) ) {
+					$current_url = groups_get_current_url();
+				} else {
+					$host = wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$uri  = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$current_url = sanitize_url( ( is_ssl() ? 'https://' : 'http://' ) . $host . $uri );
+				}
 
 				$current_post_id = url_to_postid( $current_url );
 				if ( !$current_post_id ) {
@@ -510,6 +518,43 @@ class Groups_404_Redirect {
 			$active_plugins = array_merge( $active_plugins, $active_sitewide_plugins );
 		}
 		return in_array( 'groups/groups.php', $active_plugins );
+	}
+
+	/**
+	 * Verify nonce.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $nonce
+	 * @param string|number $action
+	 *
+	 * @return int|boolean
+	 */
+	private static function verify_nonce( $nonce, $action = -1 ) {
+		if ( function_exists( 'groups_verify_nonce' ) ) {
+			return groups_verify_nonce( $nonce, $action );
+		} else {
+			return wp_verify_nonce( sanitize_text_field( wp_unslash( $nonce ) ), $action );
+		}
+	}
+
+	/**
+	 * Verify $_POST nonce.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $name
+	 * @param string|number $action
+	 *
+	 * @return int|boolean
+	 */
+	private static function verify_post_nonce( $name, $action = -1 ) {
+		if ( function_exists( 'groups_verify_post_nonce' ) ) {
+			return groups_verify_post_nonce( $name, $action );
+		} else {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			return self::verify_nonce( $_POST[$name] ?? '', $action );
+		}
 	}
 }
 Groups_404_Redirect::init();
