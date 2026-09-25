@@ -2,7 +2,7 @@
 /**
  * groups-404-redirect.php
  *
- * Copyright (c) 2013-2025 "kento" Karim Rahimpur www.itthinx.com
+ * Copyright (c) 2013-2026 "kento" Karim Rahimpur www.itthinx.com
  *
  * This code is released under the GNU General Public License.
  * See COPYRIGHT.txt and LICENSE.txt.
@@ -21,13 +21,17 @@
  * Plugin Name: Groups 404 Redirect
  * Plugin URI: http://www.itthinx.com/plugins/groups
  * Description: Redirect 404's when a visitor tries to access a page protected by <a href="https://wordpress.org/plugins/groups/">Groups</a>.
- * Version: 1.10.0
+ * Version: 2.0.0
  * Requires Plugins: groups
  * Author: itthinx
  * Author URI: https://www.itthinx.com
  * Donate-Link: https://www.itthinx.com
  * License: GPLv3
  */
+
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 define( 'GROUPS_404_REDIRECT_PLUGIN_DOMAIN', 'groups-404-redirect' );
 
@@ -70,7 +74,7 @@ class Groups_404_Redirect {
 			$groups_404_redirect['is_tag'] = $wp_query->is_tag;
 			$groups_404_redirect['is_tax'] = $wp_query->is_tax;
 			$groups_404_redirect['queried_object_id'] = $wp_query->get_queried_object_id();
-			$groups_404_redirect['tax_query'] = $wp_query->tax_query;
+			$groups_404_redirect['tax_query'] = $wp_query->tax_query; // phpcs:ignore  WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 		}
 	}
 
@@ -97,8 +101,8 @@ class Groups_404_Redirect {
 		if ( defined( 'GROUPS_PLUGIN_DOMAIN' ) ) {
 			add_submenu_page(
 				'groups-admin',
-				__( 'Groups 404 Redirect', GROUPS_PLUGIN_DOMAIN ),
-				__( 'Groups 404', GROUPS_PLUGIN_DOMAIN ),
+				__( 'Groups 404 Redirect', 'groups-404-redirect'),
+				__( 'Groups 404', 'groups-404-redirect'),
 				GROUPS_ADMINISTER_OPTIONS,
 				'groups-404-redirect',
 				array( __CLASS__, 'settings' )
@@ -117,7 +121,7 @@ class Groups_404_Redirect {
 			$links[] = sprintf(
 				'<a href="%s">%s</a>',
 				esc_url( admin_url( 'admin.php?page=groups-404-redirect' ) ),
-				esc_html( __( 'Settings', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) )
+				esc_html( __( 'Settings', 'groups-404-redirect') )
 			);
 		}
 		return $links;
@@ -129,57 +133,63 @@ class Groups_404_Redirect {
 	public static function settings() {
 
 		if ( !current_user_can( GROUPS_ADMINISTER_OPTIONS ) ) {
-			wp_die( __( 'Access denied.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+			wp_die( esc_html__( 'Access denied.', 'groups-404-redirect') );
 		}
 
 		if ( !self::groups_is_active() ) {
 			echo '<p>';
-			echo wp_kses_post( __( 'Please install and activate <a href="https://wordpress.org/plugins/groups/">Groups</a> to use this plugin.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+			printf(
+				/* translators: link */
+				esc_html__( 'Please install and activate %s to use this plugin.', 'groups-404-redirect' ),
+				'<a href="https://wordpress.org/plugins/groups/">Groups</a>'
+			);
 			echo '</p>';
 			return;
 		}
 
 		$http_status_codes = array(
-			'301' => __( 'Moved Permanently', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ),
-			'302' => __( 'Found', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ),
-			'303' => __( 'See Other', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ),
-			'307' => __( 'Temporary Redirect', GROUPS_404_REDIRECT_PLUGIN_DOMAIN )
+			'301' => __( 'Moved Permanently', 'groups-404-redirect'),
+			'302' => __( 'Found', 'groups-404-redirect'),
+			'303' => __( 'See Other', 'groups-404-redirect'),
+			'307' => __( 'Temporary Redirect', 'groups-404-redirect')
 		);
 
-		if ( isset( $_POST['action'] ) && ( $_POST['action'] == 'save' ) && wp_verify_nonce( $_POST['groups-404-redirect'], 'admin' ) ) {
+		$action = sanitize_text_field( wp_unslash( $_POST['action'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( $action === 'save' && self::verify_post_nonce( 'groups-404-redirect', 'admin' ) ) {
 
 			$redirect_to = 'post';
-			if ( !empty( $_POST['redirect_to'] ) ) {
-				switch( $_POST['redirect_to'] ) {
+			if ( !empty( $_POST['redirect_to'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				switch( $_POST['redirect_to'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 					case 'post' :
 					case 'login' :
-						Groups_Options::update_option( 'groups-404-redirect-to', $_POST['redirect_to'] );
+						Groups_Options::update_option( 'groups-404-redirect-to', sanitize_text_field( wp_unslash( $_POST['redirect_to'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 						break;
 				}
 			}
 
-			if ( !empty( $_POST['post_id'] ) ) {
-				Groups_Options::update_option( 'groups-404-redirect-post-id', intval( $_POST['post_id'] ) );
+			if ( !empty( $_POST['post_id'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				Groups_Options::update_option( 'groups-404-redirect-post-id', intval( $_POST['post_id'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			} else {
 				Groups_Options::delete_option( 'groups-404-redirect-post-id' );
 			}
 
-			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( $_POST['post_param'] ) ) : null;
+			$post_param = !empty( $_POST['post_param'] ) ? preg_replace( '/[^a-zA-Z0-9_-]/', '', trim( sanitize_text_field( wp_unslash( $_POST['post_param'] ) ) ) ) : null; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( !empty( $post_param ) ) {
 				Groups_Options::update_option( 'groups-404-redirect-post-param', $post_param );
 			} else {
 				Groups_Options::delete_option( 'groups-404-redirect-post-param' );
 			}
 
-			Groups_Options::update_option( 'groups-404-redirect-restricted-terms', !empty( $_POST['redirect_restricted_terms'] ) );
+			Groups_Options::update_option( 'groups-404-redirect-restricted-terms', !empty( $_POST['redirect_restricted_terms'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
-			if ( key_exists( $_POST['status'], $http_status_codes ) ) {
-				Groups_Options::update_option( 'groups-404-redirect-status', $_POST['status'] );
+			$status = sanitize_text_field( wp_unslash( $_POST['status'] ?? '' ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( key_exists( $status, $http_status_codes ) ) {
+				Groups_Options::update_option( 'groups-404-redirect-status', $status );
 			}
 
 			echo '<div class="updated">';
 			echo '<p>';
-			echo esc_html__( 'The settings have been saved.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo esc_html__( 'The settings have been saved.', 'groups-404-redirect');
 			echo '</p>';
 			echo '</div>';
 		}
@@ -191,11 +201,11 @@ class Groups_404_Redirect {
 		$redirect_restricted_terms = Groups_Options::get_option( 'groups-404-redirect-restricted-terms', false );
 
 		echo '<h1>';
-		echo esc_html__( 'Groups 404 Redirect', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Groups 404 Redirect', 'groups-404-redirect');
 		echo '</h1>';
 
 		echo '<p>';
-		echo esc_html__( 'Redirect settings when a visitor tries to access a page protected by Groups.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect settings when a visitor tries to access a page protected by Groups.', 'groups-404-redirect');
 		echo '</p>';
 
 		echo '<div class="settings" style="padding-right: 1em;">';
@@ -205,13 +215,13 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo sprintf( '<input type="radio" name="redirect_to" value="post" %s />', $redirect_to == 'post' ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo esc_html__( 'Redirect to a page or post', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect to a page or post', 'groups-404-redirect');
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 
 		echo '<label>';
-		echo esc_html__( 'Page or Post ID', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Page or Post ID', 'groups-404-redirect');
 		echo ' ';
 		echo sprintf( '<input type="text" name="post_id" value="%s" />', esc_attr( $post_id ) );
 		echo '</label>';
@@ -219,7 +229,7 @@ class Groups_404_Redirect {
 		if ( !empty( $post_id ) ) {
 			$post_title = get_the_title( $post_id );
 			echo '<p>';
-			echo esc_html__( 'Title:', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+			echo esc_html__( 'Title:', 'groups-404-redirect');
 			echo ' ';
 			echo '<strong>';
 			echo esc_html( $post_title );
@@ -228,24 +238,24 @@ class Groups_404_Redirect {
 		}
 
 		echo '<p class="description">';
-		echo esc_html__( 'Indicate the ID of a page or a post to redirect to, leave it empty to redirect to the home page.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Indicate the ID of a page or a post to redirect to, leave it empty to redirect to the home page.', 'groups-404-redirect');
 		echo '<br/>';
-		echo esc_html__( 'The title of the page will be shown if a valid ID has been given.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'The title of the page will be shown if a valid ID has been given.', 'groups-404-redirect');
 		echo '</p>';
 		echo '<p class="description">';
-		echo wp_kses_post( __( 'If the <strong>Redirect to the WordPress login</strong> option is chosen instead, visitors who are logged in but may not access a requested page, can be redirected to a specific page by setting the Page or Post ID here.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo wp_kses_post( __( 'If the <strong>Redirect to the WordPress login</strong> option is chosen instead, visitors who are logged in but may not access a requested page, can be redirected to a specific page by setting the Page or Post ID here.', 'groups-404-redirect') );
 		echo '</p>';
 
 		echo '<label>';
-		echo esc_html__( 'Parameter name', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Parameter name', 'groups-404-redirect');
 		echo ' ';
 		echo sprintf( '<input type="text" name="post_param" value="%s" />', esc_attr( $post_param ) );
 		echo '</label>';
 
 		echo '<p class="description">';
-		echo esc_html__( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Indicate the parameter name which holds the requested URL before redirecting to a given page or post.', 'groups-404-redirect');
 		echo ' ';
-		echo esc_html__( 'This can be useful if you need the requested URL to be passed further on.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'This can be useful if you need the requested URL to be passed further on.', 'groups-404-redirect');
 		echo '</p>';
 
 		echo '</div>';
@@ -255,12 +265,12 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo sprintf( '<input type="radio" name="redirect_to" value="login" %s />', $redirect_to == 'login' ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo esc_html__( 'Redirect to the WordPress login', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect to the WordPress login', 'groups-404-redirect');
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 		echo '<p class="description">';
-		echo esc_html__( 'If the visitor is logged in but is not allowed to access the requested page, the visitor will be taken to the home page, or, if a Page or Post ID is set, to the page indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'If the visitor is logged in but is not allowed to access the requested page, the visitor will be taken to the home page, or, if a Page or Post ID is set, to the page indicated above.', 'groups-404-redirect');
 		echo '</p>';
 		echo '</div>';
 
@@ -269,15 +279,15 @@ class Groups_404_Redirect {
 		echo '<label>';
 		echo sprintf( '<input type="checkbox" name="redirect_restricted_terms" %s />', $redirect_restricted_terms ? ' checked="checked" ' : '' );
 		echo ' ';
-		echo esc_html__( 'Redirect restricted categories, tags and taxonomy terms &hellip;', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect restricted categories, tags and taxonomy terms &hellip;', 'groups-404-redirect');
 		echo '</label>';
 
 		echo '<div style="margin: 1em 0 0 2em">';
 		echo '<p class="description">';
-		echo esc_html__( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'If the visitor is not allowed to access the requested taxonomy term, including restricted categories and tags, the visitor will be redirected as indicated above.', 'groups-404-redirect');
 		echo '</p>';
 		echo '<p class="description">';
-		echo wp_kses_post( __( 'This option will only take effect if <a href="https://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo wp_kses_post( __( 'This option will only take effect if <a href="https://www.itthinx.com/shop/groups-restrict-categories/">Groups Restrict Categories</a> is used.', 'groups-404-redirect') );
 		echo '</p>';
 		echo '</div>';
 
@@ -285,7 +295,7 @@ class Groups_404_Redirect {
 
 		echo '<p>';
 		echo '<label>';
-		echo esc_html__( 'Redirect Status Code', GROUPS_404_REDIRECT_PLUGIN_DOMAIN );
+		echo esc_html__( 'Redirect Status Code', 'groups-404-redirect');
 		echo ' ';
 		echo '<select name="status">';
 		foreach ( $http_status_codes as $code => $name ) {
@@ -296,7 +306,7 @@ class Groups_404_Redirect {
 		echo '</p>';
 
 		echo '<p class="description">';
-		echo wp_kses_post( __( '<a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">RFC 2616</a> provides details on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>.', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo wp_kses_post( __( '<a href="http://www.w3.org/Protocols/rfc2616/rfc2616.html">RFC 2616</a> provides details on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">Status Code Definitions</a>.', 'groups-404-redirect') );
 		echo '</p>';
 
 		wp_nonce_field( 'admin', 'groups-404-redirect', true, true );
@@ -304,7 +314,7 @@ class Groups_404_Redirect {
 		echo '<br/>';
 
 		echo '<div class="buttons">';
-		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', esc_attr__( 'Save', GROUPS_404_REDIRECT_PLUGIN_DOMAIN ) );
+		echo sprintf( '<input class="create button button-primary" type="submit" name="submit" value="%s" />', esc_attr__( 'Save', 'groups-404-redirect') );
 		echo '<input type="hidden" name="action" value="save" />';
 		echo '</div>';
 
@@ -397,7 +407,13 @@ class Groups_404_Redirect {
 				$post_param      = Groups_Options::get_option( 'groups-404-redirect-post-param', '' );
 				$redirect_status = intval( Groups_Options::get_option( 'groups-404-redirect-status', '301' ) );
 
-				$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				if ( function_exists( 'groups_get_current_url' ) ) {
+					$current_url = groups_get_current_url();
+				} else {
+					$host = wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$uri  = wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+					$current_url = sanitize_url( ( is_ssl() ? 'https://' : 'http://' ) . $host . $uri );
+				}
 
 				$current_post_id = url_to_postid( $current_url );
 				if ( !$current_post_id ) {
@@ -405,7 +421,7 @@ class Groups_404_Redirect {
 				}
 				if ( !$current_post_id ) {
 					require_once 'groups-404-url-to-postid.php';
-					$current_post_id = groups_404_url_to_postid( $current_url );
+					$current_post_id = groups_404_redirect_url_to_postid( $current_url );
 				}
 
 				$redirect_to = apply_filters( 'groups_404_redirect_redirect_to', $redirect_to, $current_post_id, $current_url );
@@ -433,12 +449,17 @@ class Groups_404_Redirect {
 						}
 					}
 
-					if ( !$user_can_read_post_legacy || !Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) || $is_restricted_by_term || $is_restricted_term ) {
+					if (
+						!$user_can_read_post_legacy ||
+						!Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) ||
+						$is_restricted_by_term ||
+						$is_restricted_term
+					) {
 
 						switch( $redirect_to ) {
 							case 'login' :
 								if ( !is_user_logged_in() ) {
-									wp_redirect( wp_login_url( $current_url ), $redirect_status );
+									wp_safe_redirect( wp_login_url( $current_url ), $redirect_status );
 									exit;
 								} else {
 									// If the user is already logged in, we can't
@@ -446,11 +467,13 @@ class Groups_404_Redirect {
 									// we either send them to the home page, or
 									// to the page indicated in the settings.
 									if ( empty( $post_id ) ) {
-										wp_redirect( get_home_url(), $redirect_status );
+										wp_safe_redirect( get_home_url(), $redirect_status );
+										exit;
 									} else {
 										$post_id = apply_filters( 'groups_404_redirect_post_id', $post_id, $current_post_id, $current_url );
 										if ( $post_id != $current_post_id ) {
-											wp_redirect( get_permalink( $post_id ), $redirect_status );
+											wp_safe_redirect( get_permalink( $post_id ), $redirect_status );
+											exit;
 										} else {
 											return;
 										}
@@ -472,7 +495,7 @@ class Groups_404_Redirect {
 								if ( !empty( $post_param ) ) {
 									$redirect_url = add_query_arg( $post_param, urlencode( $current_url ), $redirect_url );
 								}
-								wp_redirect( $redirect_url, $redirect_status );
+								wp_safe_redirect( $redirect_url, $redirect_status );
 								exit;
 
 						}
@@ -495,6 +518,43 @@ class Groups_404_Redirect {
 			$active_plugins = array_merge( $active_plugins, $active_sitewide_plugins );
 		}
 		return in_array( 'groups/groups.php', $active_plugins );
+	}
+
+	/**
+	 * Verify nonce.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $nonce
+	 * @param string|number $action
+	 *
+	 * @return int|boolean
+	 */
+	private static function verify_nonce( $nonce, $action = -1 ) {
+		if ( function_exists( 'groups_verify_nonce' ) ) {
+			return groups_verify_nonce( $nonce, $action );
+		} else {
+			return wp_verify_nonce( sanitize_text_field( wp_unslash( $nonce ) ), $action );
+		}
+	}
+
+	/**
+	 * Verify $_POST nonce.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $name
+	 * @param string|number $action
+	 *
+	 * @return int|boolean
+	 */
+	private static function verify_post_nonce( $name, $action = -1 ) {
+		if ( function_exists( 'groups_verify_post_nonce' ) ) {
+			return groups_verify_post_nonce( $name, $action );
+		} else {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash
+			return self::verify_nonce( $_POST[$name] ?? '', $action );
+		}
 	}
 }
 Groups_404_Redirect::init();
