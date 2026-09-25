@@ -172,7 +172,7 @@ function groups_404_url_to_postid( $url ) {
 
 			// We just want to find out, Groups will restrict the result but we
 			// need to get the post ID ...
-			$query['suppress_filters'] = true;
+			$query['suppress_filters'] = true; // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters
 
 			// Do the query
 			$query = new WP_Query( $query );

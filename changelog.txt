@@ -9,6 +9,7 @@
 * Dev - Added ABSPATH checks
 * Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url
 * Dev - Validation WordPress.Security.NonceVerification.Missing
+* Dev - Validation WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters
 
 = 1.10.0 =
 * WordPress 6.9 compatible.
