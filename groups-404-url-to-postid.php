@@ -20,6 +20,10 @@
  * @since groups-404-redirect 1.1.0
  */
 
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Find the post ID also for custom post types and bypassing filters.
  *
@@ -38,8 +42,6 @@
  */
 function groups_404_url_to_postid( $url ) {
 	global $wp_rewrite;
-
-	$result = 0;
 
 	$url = apply_filters( 'url_to_postid', $url );
 
@@ -87,7 +89,7 @@ function groups_404_url_to_postid( $url ) {
 		$url = str_replace( home_url(), '', $url );
 	} else {
 		// Chop off /path/to/blog
-		$home_path = parse_url( home_url() );
+		$home_path = parse_url( home_url() ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url
 		$home_path = isset( $home_path['path'] ) ? $home_path['path'] : '' ;
 		$url = str_replace( $home_path, '', $url );
 	}
@@ -142,10 +144,10 @@ function groups_404_url_to_postid( $url ) {
 			foreach ( $wp->public_query_vars as $wpvar ) {
 				if ( isset( $wp->extra_query_vars[$wpvar] ) ) {
 					$query[$wpvar] = $wp->extra_query_vars[$wpvar];
-				} else if ( isset( $_POST[$wpvar] ) ) {
-					$query[$wpvar] = $_POST[$wpvar];
-				} else if ( isset( $_GET[$wpvar] ) ) {
-					$query[$wpvar] = $_GET[$wpvar];
+				} else if ( isset( $_POST[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					$query[$wpvar] = $_POST[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				} else if ( isset( $_GET[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					$query[$wpvar] = $_GET[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 				} else if ( isset( $query_vars[$wpvar] ) ) {
 					$query[$wpvar] = $query_vars[$wpvar];
 				}

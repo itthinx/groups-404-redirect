@@ -6,6 +6,9 @@
 * Update - Using WP API for safer redirects.
 * Fix - Resolved instances of redirects without exits.
 * Dev - Revised instances of missing output escaping.
+* Dev - Added ABSPATH checks
+* Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url
+* Dev - Validation WordPress.Security.NonceVerification.Missing
 
 = 1.10.0 =
 * WordPress 6.9 compatible.

@@ -29,6 +29,10 @@
  * License: GPLv3
  */
 
+if ( !defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'GROUPS_404_REDIRECT_PLUGIN_DOMAIN', 'groups-404-redirect' );
 
 /**
