@@ -29,7 +29,6 @@ if ( !defined( 'ABSPATH' ) ) {
  *
  * Sources used:
  * - url_to_postid() in rewrite.php
- * - http://betterwp.net/wordpress-tips/url_to_postid-for-custom-post-types/
  *
  * Modifications made so that Groups doesn't filter out the post we're looking for.
  *
@@ -37,7 +36,6 @@ if ( !defined( 'ABSPATH' ) ) {
  *
  * @return int
  *
- * @link http://betterwp.net/wordpress-tips/url_to_postid-for-custom-post-types/
  * @see url_to_postid()
  */
 function groups_404_url_to_postid( $url ) {
@@ -146,8 +144,8 @@ function groups_404_url_to_postid( $url ) {
 					$query[$wpvar] = $wp->extra_query_vars[$wpvar];
 				} else if ( isset( $_POST[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 					$query[$wpvar] = $_POST[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				} else if ( isset( $_GET[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-					$query[$wpvar] = $_GET[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+				} else if ( isset( $_GET[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+					$query[$wpvar] = $_GET[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
 				} else if ( isset( $query_vars[$wpvar] ) ) {
 					$query[$wpvar] = $query_vars[$wpvar];
 				}

@@ -7,9 +7,12 @@
 * Fix - Resolved instances of redirects without exits.
 * Dev - Revised instances of missing output escaping.
 * Dev - Added ABSPATH checks
-* Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url
+* Dev - Validation WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 * Dev - Validation WordPress.Security.NonceVerification.Missing
+* Dev - Validation WordPress.Security.NonceVerification.Recommended
+* Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url
 * Dev - Validation WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters
+* Dev - Removed extinct resource references.
 
 = 1.10.0 =
 * WordPress 6.9 compatible.

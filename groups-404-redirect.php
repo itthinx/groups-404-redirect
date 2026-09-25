@@ -74,7 +74,7 @@ class Groups_404_Redirect {
 			$groups_404_redirect['is_tag'] = $wp_query->is_tag;
 			$groups_404_redirect['is_tax'] = $wp_query->is_tax;
 			$groups_404_redirect['queried_object_id'] = $wp_query->get_queried_object_id();
-			$groups_404_redirect['tax_query'] = $wp_query->tax_query;
+			$groups_404_redirect['tax_query'] = $wp_query->tax_query; // phpcs:ignore  WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 		}
 	}
 
