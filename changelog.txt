@@ -8,7 +8,7 @@
 * Fix - Replaced uses of language domain constants with string literals.
 * Fix - Resolved instances of redirects without exits.
 * Dev - Revised instances of missing output escaping.
-* Dev - Added ABSPATH checks
+* Dev - Added ABSPATH checks.
 * Dev - Validation WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 * Dev - Validation WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 * Dev - Validation WordPress.Security.NonceVerification.Missing
@@ -16,6 +16,7 @@
 * Dev - Validation WordPress.WP.AlternativeFunctions.parse_url_parse_url
 * Dev - Validation WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters
 * Dev - Removed extinct resource references.
+* Dev - Adjusted utility function to match plugin namespace prefix.
 
 = 1.10.0 =
 * WordPress 6.9 compatible.

@@ -25,10 +25,26 @@ if ( !defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Use groups_404_redirect_url_to_postid() instead.
+ *
+ * @deprecated since 2.0.0
+ *
+ * @param string $url
+ *
+ * @return int
+ */
+function groups_404_url_to_postid( $url ) {
+	_deprecated_function( __FUNCTION__, '2.0.0', 'groups_404_redirect_url_to_postid' );
+	return groups_404_redirect_url_to_postid( $url );
+}
+
+/**
  * Find the post ID also for custom post types and bypassing filters.
  *
  * Modifications made so that Groups doesn't filter out the post we're looking for.
  * See url_to_postid() in rewrite.php
+ *
+ * @since 2.0.0
  *
  * @see url_to_postid()
  *
@@ -36,7 +52,7 @@ if ( !defined( 'ABSPATH' ) ) {
  *
  * @return int
  */
-function groups_404_url_to_postid( $url ) {
+function groups_404_redirect_url_to_postid( $url ) {
 	global $wp_rewrite;
 
 	$url = apply_filters( 'url_to_postid', $url ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
@@ -141,9 +157,9 @@ function groups_404_url_to_postid( $url ) {
 				if ( isset( $wp->extra_query_vars[$wpvar] ) ) {
 					$query[$wpvar] = $wp->extra_query_vars[$wpvar];
 				} else if ( isset( $_POST[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-					$query[$wpvar] = $_POST[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+					$query[$wpvar] = groups_404_redirect_sanitize( $_POST[$wpvar] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				} else if ( isset( $_GET[$wpvar] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
-					$query[$wpvar] = $_GET[$wpvar]; // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended
+					$query[$wpvar] = groups_404_redirect_sanitize( $_GET[$wpvar] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				} else if ( isset( $query_vars[$wpvar] ) ) {
 					$query[$wpvar] = $query_vars[$wpvar];
 				}
@@ -181,4 +197,24 @@ function groups_404_url_to_postid( $url ) {
 		}
 	}
 	return 0;
+}
+
+/**
+ * Sanitize request input.
+ *
+ * @since 2.0.0
+ *
+ * @param string|string[] $input
+ *
+ * @return string|string[]
+ */
+function groups_404_redirect_sanitize( $input ) {
+	if ( is_array( $input ) ) {
+		foreach ( $input as $key => $value ) {
+			$input[$key] = groups_404_redirect_sanitize( $value );
+		}
+	} else if ( is_string( $input ) ) {
+		$input = sanitize_text_field( wp_unslash( $input ) );
+	}
+	return $input;
 }

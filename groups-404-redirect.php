@@ -421,7 +421,7 @@ class Groups_404_Redirect {
 				}
 				if ( !$current_post_id ) {
 					require_once 'groups-404-url-to-postid.php';
-					$current_post_id = groups_404_url_to_postid( $current_url );
+					$current_post_id = groups_404_redirect_url_to_postid( $current_url );
 				}
 
 				$redirect_to = apply_filters( 'groups_404_redirect_redirect_to', $redirect_to, $current_post_id, $current_url );
