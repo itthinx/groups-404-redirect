@@ -1,8 +1,11 @@
 == Groups 404 Redirect by itthinx - changelog.txt ==
 
 = 2.0.0 =
-* WordPress 7.1 compatible.
-* Replaced uses of language domain constants with string literals.
+* Update - WordPress 7.1 compatible.
+* Fix - Replaced uses of language domain constants with string literals.
+* Update - Using WP API for safer redirects.
+* Fix - Resolved instances of redirects without exits.
+* Dev - Revised instances of missing output escaping.
 
 = 1.10.0 =
 * WordPress 6.9 compatible.

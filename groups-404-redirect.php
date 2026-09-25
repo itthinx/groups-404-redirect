@@ -129,12 +129,16 @@ class Groups_404_Redirect {
 	public static function settings() {
 
 		if ( !current_user_can( GROUPS_ADMINISTER_OPTIONS ) ) {
-			wp_die( __( 'Access denied.', 'groups-404-redirect') );
+			wp_die( esc_html__( 'Access denied.', 'groups-404-redirect') );
 		}
 
 		if ( !self::groups_is_active() ) {
 			echo '<p>';
-			echo wp_kses_post( __( 'Please install and activate <a href="https://wordpress.org/plugins/groups/">Groups</a> to use this plugin.', 'groups-404-redirect') );
+			printf(
+				/* translators: link */
+				esc_html__( 'Please install and activate %s to use this plugin.', 'groups-404-redirect' ),
+				'<a href="https://wordpress.org/plugins/groups/">Groups</a>'
+			);
 			echo '</p>';
 			return;
 		}
@@ -433,12 +437,17 @@ class Groups_404_Redirect {
 						}
 					}
 
-					if ( !$user_can_read_post_legacy || !Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) || $is_restricted_by_term || $is_restricted_term ) {
+					if (
+						!$user_can_read_post_legacy ||
+						!Groups_Post_Access::user_can_read_post( $current_post_id, get_current_user_id() ) ||
+						$is_restricted_by_term ||
+						$is_restricted_term
+					) {
 
 						switch( $redirect_to ) {
 							case 'login' :
 								if ( !is_user_logged_in() ) {
-									wp_redirect( wp_login_url( $current_url ), $redirect_status );
+									wp_safe_redirect( wp_login_url( $current_url ), $redirect_status );
 									exit;
 								} else {
 									// If the user is already logged in, we can't
@@ -446,11 +455,13 @@ class Groups_404_Redirect {
 									// we either send them to the home page, or
 									// to the page indicated in the settings.
 									if ( empty( $post_id ) ) {
-										wp_redirect( get_home_url(), $redirect_status );
+										wp_safe_redirect( get_home_url(), $redirect_status );
+										exit;
 									} else {
 										$post_id = apply_filters( 'groups_404_redirect_post_id', $post_id, $current_post_id, $current_url );
 										if ( $post_id != $current_post_id ) {
-											wp_redirect( get_permalink( $post_id ), $redirect_status );
+											wp_safe_redirect( get_permalink( $post_id ), $redirect_status );
+											exit;
 										} else {
 											return;
 										}
@@ -472,7 +483,7 @@ class Groups_404_Redirect {
 								if ( !empty( $post_param ) ) {
 									$redirect_url = add_query_arg( $post_param, urlencode( $current_url ), $redirect_url );
 								}
-								wp_redirect( $redirect_url, $redirect_status );
+								wp_safe_redirect( $redirect_url, $redirect_status );
 								exit;
 
 						}
